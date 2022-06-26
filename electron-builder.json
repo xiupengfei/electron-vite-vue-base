@@ -1,13 +1,15 @@
 {
-  "appId": "YouAppID",
-  "asar": true,
+  "appId": "com.tn.app",
+  "productName": "ElectronVueBase",
+  "copyright": "Copyright © 2022 ${author}",
+  "asar": false,
   "directories": {
     "output": "release/${version}"
   },
   "files": ["dist"],
   "extraFiles": {
-    "from": "packages/renderer/public",
-    "to": "public"
+    "from": "static",
+    "to": "static"
   },
   "mac": {
     "artifactName": "${productName}_${version}.${ext}",
@@ -21,7 +23,7 @@
       }
     ],
     "artifactName": "${productName}_${version}.${ext}",
-    "icon": "packages/renderer/public/logo-256x256.ico"
+    "icon": "static/logo-256x256.ico"
   },
   "nsis": {
     "oneClick": false,

@@ -1,7 +1,9 @@
 import { defineConfig, ConfigEnv, loadEnv } from 'vite'
 import { resolve } from 'path'
+import { builtinModules } from 'module'
 // import electron from 'vite-plugin-electron-renderer'
 import { wrapperEnv } from '../shared/build'
+import pkg from '../../package.json'
 
 export default ({ mode, command }: ConfigEnv) => {
   wrapperEnv(loadEnv(mode, process.cwd()))
@@ -11,7 +13,7 @@ export default ({ mode, command }: ConfigEnv) => {
     mode: process.env.NODE_ENV,
     build: {
       sourcemap: 'inline',
-      outDir: '../../dist/preload',
+      outDir: resolve(process.cwd(), 'dist/preload'),
       lib: {
         entry: 'index.ts',
         formats: ['cjs'],
@@ -19,7 +21,14 @@ export default ({ mode, command }: ConfigEnv) => {
       },
       minify: mode === 'production',
       rollupOptions: {
-        // external: ['electron', ...builtinModules, ...Object.keys(pkg.dependencies || {})],
+        external: ['electron', ...builtinModules, ...Object.keys(pkg.dependencies || {})],
+      },
+    },
+    resolve: {
+      alias: {
+        '@/': `${resolve(__dirname, 'src')}/`,
+        '#/': `${resolve(__dirname, '../main')}/`,
+        '@shared/': `${resolve(__dirname, '../shared')}/`,
       },
     },
   })

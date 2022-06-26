@@ -1,16 +1,18 @@
 <script setup lang="ts">
-  import { ipcRenderer } from 'electron'
-  import path from 'path'
-  console.log('vu1e', import.meta.env)
-  console.log('staticpath', path.join(process.cwd(), import.meta.env.VITE__STATIC))
-  ipcRenderer.on('mounted', (e: any, ...args) => {
+  // import path from 'path'
+  import Debug from './Debug.vue'
+
+  window.contextBridge.ipcRenderer.on('mounted', (e: any, ...args) => {
     console.log('mounted', args)
     console.log('appenv', import.meta.env)
   })
 </script>
 
 <template>
-  <div class="logo-box"> ceshi </div>
+  <div class="logo-box">
+    ceshi
+    <Debug />
+  </div>
 </template>
 
 <style></style>

@@ -1,4 +1,5 @@
 import { Menu, Tray, app, ipcMain } from 'electron'
+import { staticPath } from '../../shared/utils'
 import path from 'path'
 
 export default (mainWindow: any) => {
@@ -25,7 +26,7 @@ export default (mainWindow: any) => {
   //     ? 'packages/renderer/public/logo-256x256.ico'
   //     : 'public/logo-256x256.ico',
   // )
-  const iconPath = path.join(process.cwd(), import.meta.env.VITE__STATIC, 'logo-256x256.ico')
+  const iconPath = path.join(staticPath(), 'logo-256x256.ico')
   console.log('**************', iconPath)
   const appTray = new Tray(iconPath)
   app.whenReady().then(() => {

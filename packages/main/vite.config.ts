@@ -1,5 +1,5 @@
 import { defineConfig, ConfigEnv, loadEnv } from 'vite'
-// import { resolve } from 'path'
+import { resolve } from 'path'
 import { builtinModules } from 'module'
 import pkg from '../../package.json'
 // import electron from 'vite-plugin-electron-renderer'
@@ -15,7 +15,7 @@ export default ({ mode, command }: ConfigEnv) => {
     mode: process.env.NODE_ENV,
     build: {
       sourcemap: true,
-      outDir: '../../dist/main',
+      outDir: resolve(process.cwd(), 'dist/main'),
       lib: {
         entry: 'index.ts',
         formats: ['cjs'],
@@ -26,6 +26,13 @@ export default ({ mode, command }: ConfigEnv) => {
         // 'release' is not exported by __vite-browser-external:os, imported by packages/main/index.ts
         // 引入builtinModules
         external: ['electron', ...builtinModules, ...Object.keys(pkg.dependencies || {})],
+      },
+    },
+    resolve: {
+      alias: {
+        '@/': `${resolve(__dirname, 'src')}/`,
+        '#/': `${resolve(__dirname, '../main')}/`,
+        '@shared/': `${resolve(__dirname, '../shared')}/`,
       },
     },
   })

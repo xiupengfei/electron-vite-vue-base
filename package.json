@@ -1,18 +1,21 @@
 {
   "name": "electron-vite-vue-base",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "electron-vite-vue-base",
   "main": "dist/main/index.cjs",
   "author": "pengfei.xiu",
   "scripts": {
     "prepare": "husky install",
-    "start": "cross-env NODE_ENV=development node scripts/watch.mjs",
-    "prebuild": "cross-env NODE_ENV=production vue-tsc --noEmit --p packages/renderer/tsconfig.json && node scripts/build.mjs",
+    "pre": "node scripts/pre.mjs",
+    "start": "cross-env NODE_ENV=development npm run pre && node scripts/watch.mjs",
+    "prebuild": "cross-env NODE_ENV=production vue-tsc --noEmit --p packages/renderer/tsconfig.json && npm run pre && node scripts/build.mjs",
     "build": "cross-env NODE_ENV=production electron-builder"
   },
   "license": "ISC",
   "dependencies": {
     "axios": "^0.27.2",
+    "better-sqlite3": "^7.5.3",
+    "fs-extra": "^10.1.0",
     "pinia": "^2.0.13",
     "vue": "^3.2.31"
   },
@@ -27,6 +30,7 @@
     "node": ">=14.17.0"
   },
   "devDependencies": {
+    "@types/fs-extra": "^9.0.13",
     "@typescript-eslint/parser": "^5.21.0",
     "@vitejs/plugin-vue": "^2.3.1",
     "@vitejs/plugin-vue-jsx": "^1.3.10",
@@ -39,6 +43,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-vue": "^8.7.1",
     "husky": "^7.0.4",
+    "less": "^4.1.3",
     "prettier": "^2.6.2",
     "stylelint": "^14.8.1",
     "stylelint-config-prettier": "^9.0.3",
@@ -46,6 +51,7 @@
     "typescript": "^4.6.4",
     "vite": "^2.9.6",
     "vite-plugin-electron-renderer": "^0.3.3",
+    "vite-plugin-progress": "^0.0.3",
     "vite-plugin-resolve": "^2.0.8",
     "vue-tsc": "^0.34.11"
   }

@@ -1,8 +1,15 @@
 import { app, BrowserWindow, shell, ipcMain, Tray } from 'electron'
 import { release } from 'os'
-import { join, resolve } from 'path'
+// import { join, resolve } from 'path'
 
 import setupTray from './tray'
+import './env'
+import './ipc'
+import StartWindow from './windows/StartWindow'
+import MainWindow from './windows/MainWindow'
+import { EIPCAction } from './ipc/action.enum'
+
+console.log('###########', global.__maindir222)
 
 // 禁用Windows 7的GPU加速
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
@@ -11,54 +18,46 @@ if (release().startsWith('6.1')) app.disableHardwareAcceleration()
 
 if (process.platform === 'win32') app.setAppUserModelId(app.getName())
 console.log('------------------start', app.requestSingleInstanceLock())
+
+console.log('---static', import.meta.env.VITE__STATIC)
 if (!app.requestSingleInstanceLock()) {
   console.warn('======有运行的进程=====')
   app.quit()
   process.exit(0)
 }
 
-process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
+// process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
 let win: BrowserWindow | null = null
 let appTray: Tray
 
 async function createWindow() {
-  win = new BrowserWindow({
-    title: 'Main window',
-    icon: resolve(process.cwd(), 'packages/renderer/public/logo.png'),
-    webPreferences: {
-      preload: join(__dirname, '../preload/index.cjs'),
-      nodeIntegration: true,
-      contextIsolation: false,
-    },
-  })
+  // 启动页面
+  const startWindow = new StartWindow()
 
-  // 应用程序已打包， 生产环境
-  if (app.isPackaged) {
-    win.loadFile(join(__dirname, '../renderer/index.html'))
-  } else {
-    // 🚧 Use ['ENV_NAME'] avoid vite:define plugin
-    const url = `http://127.0.0.1:8081`
-    win.loadURL(url)
-  }
+  const mainWindow = new MainWindow()
+  win = mainWindow.getWindow()
 
-  win.webContents.openDevTools()
-
-  // Test active push message to Renderer-process
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('mounted', 'main', import.meta.env)
   })
 
-  // Make all links open with the browser, not with the application
-  win.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith('https:')) shell.openExternal(url)
-    return { action: 'deny' }
+  mainWindow.start().then(() => {
+    // 主页面启动完毕后，隐藏启动页面
+    startWindow.destroy()
+  })
+
+  win.webContents.openDevTools()
+
+  ipcMain.on(EIPCAction.DEV_OPEN_DEV_TOOLS, () => {
+    console.log('----open-dev-tools')
+    win?.webContents.openDevTools()
   })
 
   appTray = setupTray(win)
 
   ipcMain.on('close', (e) => {
-    console.log('======销毁')
+    console.log('======销毁托盘====')
     appTray && appTray.destroy()
     app.quit()
     process.exit(0)
